@@ -18,6 +18,5 @@ class s_udraw {
 
   nginx::resource::vhost{'capi.udraw.me':
     www_root => '/var/www/udrawstatic',
-    require  => ['nginx']
   }
 }
