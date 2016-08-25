@@ -21,11 +21,11 @@ class s_udraw {
   }
 
   letsencrypt::certonly { 'capi.udraw.me':
-    plugin        => 'webroot',
-    webroot_paths => ['/var/www/udrawstatic'],
-    manage_cron   => true,
+    plugin               => 'webroot',
+    webroot_paths        => ['/var/www/udrawstatic'],
+    manage_cron          => true,
     cron_success_command => '/bin/systemctl reload nginx.service',
-    require       => [File['/var/www/udrawstatic']],
+    require              => File['/var/www/udrawstatic'],
   }
 
   nginx::resource::vhost{'capi.udraw.me':
@@ -33,6 +33,6 @@ class s_udraw {
     ssl      => true,
     ssl_cert => '/etc/letsencrypt/live/capi.udraw.me/fullchain.pem',
     ssl_key  => '/etc/letsencrypt/live/capi.udraw.me/privkey.pem',
-    require  => [letsencrypt::certonly['capi.udraw.me']],
+    #require  => Letsencrypt::certonly['capi.udraw.me'], # TODO work needed to sort deps
   }
 }
