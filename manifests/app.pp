@@ -4,14 +4,14 @@ class s_udraw::app {
     repo_url_suffix => '6.x',
   }
 
-  package {'redis-server':
-    ensure => present,
-  }
+  ensure_packages(['redis-server', 'supervisor'])
 
-  package {'supervisor':
-    ensure => present,
+  file {'/etc/supervisor/supervisord.conf':
+    ensure  => file,
+    content => template('s_udraw/supervisord.conf.erb'),
+    notify  => Service['supervisor']
   }
 
   include ::datadog_agent::integrations::redis
-  include ::datadog_agent::integrations::supervisor
+  include ::datadog_agent::integrations::supervisord
 }

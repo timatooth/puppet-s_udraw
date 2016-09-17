@@ -1,4 +1,4 @@
-class s_udraw($server_name = 'capi.udraw.me') {
+class s_udraw($server_name = undef) {
   class{'nginx':
     manage_repo => true,
     package_source => 'nginx-mainline'
@@ -18,7 +18,6 @@ class s_udraw($server_name = 'capi.udraw.me') {
   class { ::letsencrypt:
     config => {
       email => 'nztims@gmail.com',
-      server => 'https://acme-staging.api.letsencrypt.org/directory',
     }
   }
 
@@ -27,7 +26,7 @@ class s_udraw($server_name = 'capi.udraw.me') {
     webroot_paths        => ['/var/www/udrawstatic'],
     manage_cron          => true,
     cron_success_command => '/bin/systemctl reload nginx.service',
-    require              => [Service['nginx'], Nginx::Resource::Vhost["non_https_${server_name}"]],
+    require              => [Nginx::Resource::Vhost["non_https_${server_name}"]],
   }
 
   #non https version for (we need this for verifying the ACME challenge from letsencrypt)
@@ -42,10 +41,10 @@ class s_udraw($server_name = 'capi.udraw.me') {
     ssl         => true,
     ssl_port    => 443,
     listen_port => 443,
-    ssl_cert    => '/etc/letsencrypt/live/capi.udraw.me/fullchain.pem',
-    ssl_key     => '/etc/letsencrypt/live/capi.udraw.me/privkey.pem',
+    ssl_cert    => "/etc/letsencrypt/live/${server_name}/fullchain.pem",
+    ssl_key     => "/etc/letsencrypt/live/${server_name}/privkey.pem",
     require     => Letsencrypt::Certonly[$server_name],
   }
 
-  include ::s_draw::app
+  include ::s_udraw::app
 }
