@@ -27,7 +27,7 @@ class s_udraw($server_name = 'capi.udraw.me') {
     webroot_paths        => ['/var/www/udrawstatic'],
     manage_cron          => true,
     cron_success_command => '/bin/systemctl reload nginx.service',
-    require              => Nginx::Resource::Vhost["non_https_${server_name}"],
+    require              => [Service['nginx'], Nginx::Resource::Vhost["non_https_${server_name}"]],
   }
 
   #non https version for (we need this for verifying the ACME challenge from letsencrypt)
@@ -46,4 +46,6 @@ class s_udraw($server_name = 'capi.udraw.me') {
     ssl_key     => '/etc/letsencrypt/live/capi.udraw.me/privkey.pem',
     require     => Letsencrypt::Certonly[$server_name],
   }
+
+  include ::s_draw::app
 }
