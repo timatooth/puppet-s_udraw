@@ -1,0 +1,18 @@
+[Unit]
+Description=Advanced multiplayer drawing server
+After=network.target
+Documentation=https://github.com/timatooth/udraw
+Wants=redis.service
+[Service]
+ExecStart=/usr/bin/node /opt/udraw/server
+Restart=always
+User=www-data
+Group=www-data
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=udraw
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+Alias=udrawd.service

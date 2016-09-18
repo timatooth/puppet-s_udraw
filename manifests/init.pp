@@ -43,13 +43,13 @@ class s_udraw($server_name = undef) {
   #non https version for (we need this for verifying the ACME challenge from letsencrypt)
   nginx::resource::vhost{"non_https_$server_name":
     server_name         => [$server_name],
-    www_root            => '/var/www/udrawstatic',
+    www_root            => '/var/www',
     location_cfg_append => { 'rewrite' => '^ https://$server_name$request_uri? permanent' }
   }
 
   nginx::resource::vhost{"https_$server_name":
     server_name => [$server_name],
-    www_root    => '/var/www/udrawstatic',
+    www_root    => '/opt/capistrano/udraw/current/public/',
     ssl         => true,
     ssl_port    => 443,
     listen_port => 443,
@@ -58,31 +58,21 @@ class s_udraw($server_name = undef) {
     require     => Letsencrypt::Certonly[$server_name],
   }
 
-  nginx::resource::location { "${name}_root":
-    ensure          => present,
-    ssl             => true,
-    ssl_only        => true,
-    vhost           => "https_$server_name",
-    location        => '/',
-    location_alias  => '/opt/capistrano/udraw/current/public/',
-  }
 
   nginx::resource::location { "${name}_canvasapi":
     ensure          => present,
-    ssl             => true,
     ssl_only        => true,
-    vhost           => "https_$server_name",
+    vhost           => "https_${server_name}",
     location        => '/canvases/',
-    proxy           => 'canvasapi',
+    proxy           => 'http://canvasapi',
   }
 
   nginx::resource::location { "${name}_socketio":
     ensure          => present,
-    ssl             => true,
     ssl_only        => true,
-    vhost           => "https_$server_name",
+    vhost           => "https_${server_name}",
     location        => '/socket.io/',
-    proxy           => 'socketio',
+    proxy           => 'http://socketio',
     location_cfg_append => {
       proxy_set_header   => 'Upgrade $http_upgrade',
       proxy_set_header   => 'Connection "upgrade"',
