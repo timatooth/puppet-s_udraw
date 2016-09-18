@@ -43,9 +43,9 @@ class s_udraw($server_name = undef) {
   #non https version for (we need this for verifying the ACME challenge from letsencrypt)
   nginx::resource::vhost{"non_https_$server_name":
     server_name         => [$server_name],
-    www_root            => '/var/www',
-    location_cfg_append => { 'rewrite' => '^ https://$server_name$request_uri? permanent' }
-    require             => Class['nginx'],
+    www_root            => '/var/www/udrawstatic',
+    notify              => Service['nginx'],
+#    location_cfg_append => { 'rewrite' => '^ https://$server_name$request_uri? permanent' }
   }
 
   nginx::resource::vhost{"https_$server_name":

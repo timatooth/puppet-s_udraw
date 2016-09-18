@@ -10,7 +10,7 @@ class s_udraw::app {
     enable  => true,
     ensure  => running,
     require => Package['supervisor'],
-  } ->
+  }
   file {'/etc/supervisor/supervisord.conf':
     ensure  => file,
     content => template('s_udraw/supervisord.conf.erb'),
