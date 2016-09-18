@@ -6,6 +6,11 @@ class s_udraw::app {
 
   ensure_packages(['redis-server', 'supervisor'])
 
+  package {'foreman':
+    ensure   => present,
+    provider => 'gem'
+  }
+
   service {'supervisor':
     enable  => true,
     ensure  => running,

@@ -51,6 +51,7 @@ class s_udraw($server_name = undef) {
   nginx::resource::vhost{"https_$server_name":
     server_name => [$server_name],
     www_root    => '/opt/capistrano/udraw/current/public/',
+    http2       => 'on',
     ssl         => true,
     ssl_port    => 443,
     listen_port => 443,
@@ -75,12 +76,12 @@ class s_udraw($server_name = undef) {
     location        => '/socket.io/',
     proxy           => 'http://socketio',
     location_cfg_append => {
-      proxy_set_header   => 'Upgrade $http_upgrade',
-      proxy_set_header   => 'Connection "upgrade"',
-      proxy_set_header   => 'X-Forwarded-For $proxy_add_x_forwarded_for',
-      proxy_set_header   => 'Host $host',
       proxy_http_version => '1.1',
-    }
+    },
+    raw_append => [
+      'proxy_set_header Upgrade $http_upgrade;',
+      'proxy_set_header Connection "upgrade";'
+    ]
   }
 
   include ::s_udraw::app
