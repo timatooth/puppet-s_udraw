@@ -45,6 +45,7 @@ class s_udraw($server_name = undef) {
     server_name         => [$server_name],
     www_root            => '/var/www',
     location_cfg_append => { 'rewrite' => '^ https://$server_name$request_uri? permanent' }
+    require             => Class['nginx'],
   }
 
   nginx::resource::vhost{"https_$server_name":

@@ -10,17 +10,16 @@ class s_udraw::app {
     enable  => true,
     ensure  => running,
     require => Package['supervisor'],
-  }
-
+  } ->
   file {'/etc/supervisor/supervisord.conf':
     ensure  => file,
     content => template('s_udraw/supervisord.conf.erb'),
-    notify  => Service['supervisor']
-  }
-
-  include ::datadog_agent::integrations::redis
-
+    require => Package['supervisor'],
+    notify  => Service['supervisor'],
+  } ->
   class { ::datadog_agent::integrations::supervisord:
     instances => [{servername => $::hostname, socket => 'unix:///var/run//supervisor.sock'}],
   }
+
+  include ::datadog_agent::integrations::redis
 }
