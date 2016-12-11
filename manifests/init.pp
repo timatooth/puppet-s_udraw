@@ -13,7 +13,8 @@ class s_udraw($server_name = undef) {
   }
 
   class { ::letsencrypt:
-    config => {
+    install_method => 'vcs',
+    config         => {
       email => 'nztims@gmail.com',
     }
   }
