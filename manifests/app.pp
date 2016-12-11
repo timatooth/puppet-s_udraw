@@ -12,8 +12,8 @@ class s_udraw::app {
   }
 
   service {'supervisor':
-    enable  => true,
     ensure  => running,
+    enable  => true,
     require => Package['supervisor'],
   }
   file {'/etc/supervisor/supervisord.conf':
@@ -22,7 +22,7 @@ class s_udraw::app {
     require => Package['supervisor'],
     notify  => Service['supervisor'],
   } ->
-  class { ::datadog_agent::integrations::supervisord:
+  class { 'datadog_agent::integrations::supervisord':
     instances => [{servername => $::hostname, socket => 'unix:///var/run//supervisor.sock'}],
   }
 
