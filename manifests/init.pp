@@ -1,3 +1,4 @@
+# udraw!
 class s_udraw($server_name = undef) {
   class{'nginx':
     manage_repo => true,
