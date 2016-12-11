@@ -10,10 +10,6 @@ class s_udraw($server_name = undef) {
   } ->
   file {'/var/www/udrawstatic':
     ensure => directory,
-  } ->
-  file {'/var/www/udrawstatic/index.html':
-    ensure  => file,
-    content => template('s_udraw/index.html.erb')
   }
 
   class { ::letsencrypt:
@@ -46,9 +42,20 @@ class s_udraw($server_name = undef) {
     server_name         => [$server_name],
     www_root            => '/var/www/udrawstatic',
     notify              => Service['nginx'],
+    # Send all http requets to the https listener
+    # an exception must be made for Certbot/letsencrypt which needs to access
+    # the /.welll-known path for doing host validation.
     location_cfg_append => {
        'rewrite' => '^ https://$server_name$request_uri? permanent',
     }
+  }
+
+  # Create a path exception for the (non ssl) server to allow letsencrypt
+  # rather than sending it a 301 to https://
+  nginx::resource::location{"allow_letsencrypt_wellknown_path":
+    vhost    => "non_https_$server_name",
+    location => '/.well-known',
+    www_root => '/var/www/udrawstatic'
   }
 
   nginx::resource::vhost{"https_$server_name":
