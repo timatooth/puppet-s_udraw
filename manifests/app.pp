@@ -11,5 +11,10 @@ class s_udraw::app {
     mode    => '0644',
     content => template('s_udraw/udraw.service.erb'),
   }
+
+  file {'/opt/udraw':
+    ensure => directory,
+    mode   => '0644',
+  }
   include ::datadog_agent::integrations::redis
 }
