@@ -1,5 +1,5 @@
 [Unit]
-Description=Advanced multiplayer drawing server
+Description=Multiplayer drawing server
 After=network.target
 Documentation=https://github.com/timatooth/udraw
 Wants=redis.service
@@ -15,4 +15,4 @@ Environment=NODE_ENV=production
 
 [Install]
 WantedBy=multi-user.target
-Alias=udrawd.service
+Alias=udraw.service

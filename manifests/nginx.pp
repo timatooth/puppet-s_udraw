@@ -58,6 +58,9 @@ class s_udraw::nginx($server_name = undef) {
   nginx::resource::vhost{"https_${server_name}":
     server_name => [$server_name],
     www_root    => '/opt/capistrano/udraw/current/public/',
+    add_header  => {
+      'Strict-Transport-Security' => '"max-age=31536000; includeSubDomains" always',
+    },
     http2       => 'on',
     ssl         => true,
     ssl_port    => 443,

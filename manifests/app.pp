@@ -4,27 +4,12 @@ class s_udraw::app {
     repo_url_suffix => '6.x',
   }
 
-  ensure_packages(['redis-server', 'supervisor'])
+  ensure_packages(['redis-server'])
 
-  package {'foreman':
-    ensure   => present,
-    provider => 'gem'
-  }
-
-  service {'supervisor':
-    ensure  => running,
-    enable  => true,
-    require => Package['supervisor'],
-  }
-  file {'/etc/supervisor/supervisord.conf':
+  file {'/etc/systemd/system/udraw.service':
     ensure  => file,
-    content => template('s_udraw/supervisord.conf.erb'),
-    require => Package['supervisor'],
-    notify  => Service['supervisor'],
-  } ->
-  class { 'datadog_agent::integrations::supervisord':
-    instances => [{servername => $::hostname, socket => 'unix:///var/run//supervisor.sock'}],
+    mode    => '0644',
+    content => template('s_udraw/udraw.service.erb'),
   }
-
   include ::datadog_agent::integrations::redis
 }
